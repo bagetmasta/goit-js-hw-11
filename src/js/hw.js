@@ -25,9 +25,12 @@ async function onSubmitButtonClick(e) {
   e.preventDefault();
 
   const searchQuery = e.currentTarget.elements.searchQuery.value;
-  const x = 'image_type=photo&orientation=horizontal&safesearch=true';
+  const requestParameters =
+    'image_type=photo&orientation=horizontal&safesearch=true';
 
-  const response = await axios.get(`${BASE_URL}&q=${searchQuery}&${x}`);
+  const response = await axios.get(
+    `${BASE_URL}&q=${searchQuery}&${requestParameters}`
+  );
 
   const { data } = response;
 
