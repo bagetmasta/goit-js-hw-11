@@ -9,20 +9,22 @@
   </head>
   <body>
     <!-- Форма для поиска изображений -->
-    <form class="search-form" id="search-form">
-      <input
-        type="text"
-        name="searchQuery"
-        autocomplete="off"
-        placeholder="Search images..."
-      />
-      <button type="submit">Search</button>
-    </form>
+    <div class="container">
+      <form class="search-form" id="search-form">
+        <input
+          type="text"
+          name="searchQuery"
+          autocomplete="off"
+          placeholder="Что ищем, Ватсон?"
+        />
+        <button type="submit">Искать</button>
+      </form>
+    </div>
 
     <!-- Карточки изображений -->
     <div class="gallery"></div>
 
     <!-- Кнопка для загрузки доп.изоб -->
-    <button type="button" class="load-more">Load more</button>
+    <button type="button" class="load-more is-hidden">Load more</button>
   </body>
 </html>

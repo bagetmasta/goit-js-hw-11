@@ -1,47 +1,38 @@
-import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-
-const axios = require('axios').default;
+import PixabayApiService from './pixabay-api';
 
 const refs = {
   form: document.querySelector('.search-form'),
   gallery: document.querySelector('.gallery'),
+  button: document.querySelector('.load-more'),
 };
 
-const BASE_URL =
-  'https://pixabay.com/api/?key=28962115-98d4b9d0b477d5dce3ce531ef';
-
-const REQUEST_PARAMETRS =
-  'image_type=photo&orientation=horizontal&safesearch=true';
+const pixabayApiService = new PixabayApiService();
 
 refs.form.addEventListener('submit', onSubmitButtonClick);
+refs.button.addEventListener('click', onLoadMoreButtonClick);
 
-async function onSubmitButtonClick(e) {
+function onSubmitButtonClick(e) {
   e.preventDefault();
 
-  const searchQuery = e.currentTarget.elements.searchQuery.value;
+  clearCadrsContainer();
 
-  const response = await axios.get(
-    `${BASE_URL}&q=${searchQuery}&${REQUEST_PARAMETRS}`
-  );
+  pixabayApiService.query = e.currentTarget.elements.searchQuery.value;
+  pixabayApiService.resetPage();
+  requestToPixabayApiService();
+}
 
-  const {
-    data: { hits },
-  } = response;
+function onLoadMoreButtonClick() {
+  refs.button.classList.add('is-hidden');
+  requestToPixabayApiService();
+}
 
-  if (hits.length === 0) {
-    refs.gallery.innerHTML = '';
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-
-    return;
-  }
-
-  const newMarkup = renderMarkup(hits);
-
-  const lightbox = new SimpleLightbox('.gallery a');
+function requestToPixabayApiService() {
+  pixabayApiService
+    .fetchCards()
+    .then(renderMarkup)
+    .catch(error => console.log(error.stack));
 }
 
 function renderMarkup(data) {
@@ -56,7 +47,7 @@ function renderMarkup(data) {
         comments,
         downloads,
       }) => {
-        return `    
+        return `
     <div class="photo-card">
       <a class="photo-link" href="${largeImageURL}">
         <img class="image" src="${webformatURL}" alt="${tags}" loading="lazy" />
@@ -80,5 +71,12 @@ function renderMarkup(data) {
     )
     .join('');
 
-  refs.gallery.innerHTML = newMarkup;
+  refs.gallery.insertAdjacentHTML('beforeend', newMarkup);
+  const lightbox = new SimpleLightbox('.gallery a');
+  lightbox.refresh();
+  refs.button.classList.remove('is-hidden');
+}
+
+function clearCadrsContainer() {
+  refs.gallery.innerHTML = '';
 }
